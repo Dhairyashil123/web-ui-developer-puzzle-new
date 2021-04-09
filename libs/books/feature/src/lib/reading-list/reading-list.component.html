@@ -1,5 +1,5 @@
 <ng-container *ngIf="(readingList$ | async).length > 0; else empty">
-  <div class="reading-list-item" *ngFor="let item  of readingList$ | async">
+  <div data-testing="reading-list-item" class="reading-list-item" *ngFor="let item  of readingList$ | async">
     <div>
       <img tabindex="0" [attr.aria-label]="item.title + 'image'" [alt]="item.title" class="reading-list-item--cover" [src]="item.coverUrl" />
     </div>
@@ -8,15 +8,37 @@
       <div tabindex="0" [attr.aria-label]="item.authors.join(',')" class="reading-list-item--details--author">
         {{ item.authors.join(',') }}
       </div>
+      <div *ngIf="item.finished" data-testing="finished-date" tabindex="0" [attr.aria-label]="'Finsished on' + item.finishedDate" class="reading-list-item--details--author">
+        Finished on: {{ item.finishedDate }}
+      </div>
     </div>
-    <div>
+    <div class="button-row">
       <button
         mat-icon-button
+        data-testing="remove-btn"
         color="warn"
         [attr.aria-label]="'Remove ' + item.title + ' from reading list'"
         (click)="removeFromReadingList(item)"
       >
         <mat-icon>remove_circle</mat-icon>
+      </button>
+      <button
+        data-testing="mark-finished-btn"
+        *ngIf="!item.finished"
+        mat-icon-button
+        [attr.aria-label]="'Mark ' + item.title + ' as Finished'"
+        (click)="markAsFinish(item)"
+      >
+        <mat-icon class="mark-finish-icon">check_circle</mat-icon>
+      </button>
+      <button
+        data-testing="finished-btn"
+        *ngIf="item.finished"
+        mat-icon-button
+        [attr.aria-label]="item.title + ' is Marked as Finished'"
+        disabled
+      >
+        <mat-icon class="check_circle_success">check_circle</mat-icon>
       </button>
     </div>
   </div>

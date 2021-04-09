@@ -32,6 +32,7 @@
           <p tabindex="0" [attr.aria-label]="book.description" [innerHTML]="book.description"></p>
           <div>
             <button
+              *ngIf="!book.finished; else finishedBlock"
               mat-flat-button
               color="primary"
               (click)="addBookToReadingList(book)"
@@ -39,6 +40,17 @@
             >
               Want to Read
             </button>
+            <ng-template #finishedBlock>
+              <button
+                mat-flat-button
+                class="success-btn"
+                data-testing="finished-btn"
+                color="success"
+                [disabled]="book.isAdded && book.finished"
+              >
+                Finished
+              </button>
+            </ng-template>
           </div>
         </div>
       </div>
