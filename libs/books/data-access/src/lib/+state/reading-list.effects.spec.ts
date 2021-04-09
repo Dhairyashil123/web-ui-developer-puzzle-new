@@ -4,7 +4,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 
-import { SharedTestingModule } from '@tmo/shared/testing';
+import { SharedTestingModule, createReadingListItem } from '@tmo/shared/testing';
 import { ReadingListEffects } from './reading-list.effects';
 import * as ReadingListActions from './reading-list.actions';
 import { API_ENDPOINTS } from './book.constant';
@@ -41,6 +41,48 @@ describe('ToReadEffects', () => {
       });
 
       httpMock.expectOne(API_ENDPOINTS.LIST).flush([]);
+    });
+
+    describe('finishFromReadingList$', () => {
+      it('should trigger action confirmedFinished if finish api return success', (done) => {
+        actions = new ReplaySubject();
+        const testItem = createReadingListItem('A');
+        actions.next(ReadingListActions.finishFromReadingList({ item: testItem }));
+        const updatedTestItem = {
+          ...testItem,
+          finished: true,
+          finishedDate: '2021-30-03T00:00:00.000Z'
+        };
+        effects.markBookAsFinished$.subscribe((action) => {
+          expect(action).toEqual(
+            ReadingListActions.confirmedFinished({
+              item: updatedTestItem
+            })
+          );
+          done();
+        });
+        httpMock.expectOne(`${API_ENDPOINTS.LIST}/A/finished`).flush({ ...updatedTestItem });
+      });
+  
+      it('should trigger action failedFinished if finish api return error', (done) => {
+        actions = new ReplaySubject();
+        const testItem = createReadingListItem('A');
+        actions.next(ReadingListActions.finishFromReadingList({ item: testItem }));
+        effects.markBookAsFinished$.subscribe((action) => {
+          expect(action).toEqual(
+            ReadingListActions.failedFinished({
+              error: 'error occured from backend'
+            })
+          );
+          done();
+        });
+        httpMock
+          .expectOne(`${API_ENDPOINTS.LIST}/A/finished`)
+          .error(new ErrorEvent('HttpErrorResponse'), {
+            status: 500,
+            statusText: 'error occured from backend'
+          });
+      });
     });
   });
 });

@@ -33,6 +33,14 @@
   margin-right: $spacing-xxs;
 }
 
+.button-row {
+  flex-direction: row !important;
+
+  .check_circle_success {
+    color: #006400;
+  }
+}
+
 .reading-list-item--details--title,
 .reading-list-item--details--author {
   text-overflow: ellipsis;

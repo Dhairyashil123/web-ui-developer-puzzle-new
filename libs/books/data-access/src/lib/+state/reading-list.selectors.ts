@@ -35,7 +35,11 @@ export const getAllBooks = createSelector<
   Record<string, ReadingListItem>,
   ReadingListBook[]
 >(getBooks, getReadingListEntities, (books, entities) => {
-  return books.map(b => ({ ...b, isAdded: Boolean(entities[b.id]) }));
+  return books.map((b) => ({
+    ...b,
+    isAdded: Boolean(entities[b.id]),
+    finished: Boolean(entities[b.id]?.finished)
+  }));
 });
 
 export const getReadingList = createSelector(getReadingListState, selectAll);
